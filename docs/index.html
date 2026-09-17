@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сергей Прокопик — визитка</title>
+<style>
+  :root {
+    --bg: #faf6ee;
+    --paper: #ffffff;
+    --ink: #201d17;
+    --ink-dim: #6b6455;
+    --accent: #b1502f;
+    --accent-soft: #e9d9c8;
+    --line: #e6ddcc;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background-color: #dbe9f8;
+    background-image:
+      linear-gradient(rgba(219,233,248,.72), rgba(219,233,248,.72)),
+      url("images/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: var(--ink);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.65;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 .5em;
+  }
+
+  p { margin: 0 0 1.1em; }
+  a { color: var(--accent); }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(250,246,238,.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: .9rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-brand {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: .02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-size: .88rem;
+    letter-spacing: .03em;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 2.5rem;
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .hero-text .badge {
+    display: inline-block;
+    padding: .3em .9em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: .78rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 1.1rem;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+    margin-bottom: .35em;
+  }
+
+  .hero-text .tagline {
+    color: var(--ink-dim);
+    font-size: 1.1rem;
+    max-width: 46ch;
+  }
+
+  .hero-photo {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    box-shadow: 0 18px 40px -18px rgba(32,29,23,.35);
+  }
+
+  .hero-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-photo::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 45%;
+    background: linear-gradient(180deg, rgba(20,17,12,0), rgba(20,17,12,.55));
+  }
+
+  /* ---------- Layout ---------- */
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  section { padding: 3rem 0; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .section-head .num {
+    font-family: Georgia, serif;
+    color: var(--accent);
+    font-size: .95rem;
+    letter-spacing: .05em;
+  }
+
+  section h2 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    margin: 0;
+  }
+
+  section p { color: var(--ink-dim); max-width: 70ch; }
+  section p strong { color: var(--ink); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 0;
+  }
+
+  /* ---------- Work ---------- */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4rem;
+    margin-top: 1.8rem;
+  }
+
+  .work-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .work-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px -18px rgba(32,29,23,.3);
+  }
+
+  .work-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .work-card-body { padding: 1.1rem 1.2rem 1.3rem; }
+
+  .work-card h3 {
+    font-size: 1.02rem;
+    margin-bottom: .4em;
+  }
+
+  .work-card p {
+    font-size: .92rem;
+    margin-bottom: 0;
+  }
+
+  .portfolio-list {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: .9rem;
+  }
+
+  .portfolio-list li {
+    padding-left: 1.4em;
+    position: relative;
+    color: var(--ink-dim);
+  }
+
+  .portfolio-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .55em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .portfolio-list strong { color: var(--ink); }
+
+  /* ---------- Facts ---------- */
+  .facts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.6rem;
+  }
+
+  .fact-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.3rem 1.3rem 1.1rem;
+    font-size: .92rem;
+    color: var(--ink-dim);
+  }
+
+  .fact-card .fact-mark {
+    display: block;
+    font-family: Georgia, serif;
+    font-size: 1.6rem;
+    color: var(--accent-soft);
+    line-height: 1;
+    margin-bottom: .3rem;
+  }
+
+  .fact-card strong { color: var(--ink); }
+
+  /* ---------- Finale ---------- */
+  .finale {
+    position: relative;
+    margin: 1rem 0 0;
+    border-radius: 20px;
+    overflow: hidden;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .finale img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .finale::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(20,16,10,.55), rgba(20,16,10,.85));
+    z-index: 1;
+  }
+
+  .finale blockquote {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+    margin: 0;
+    text-align: center;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+    color: #fbf3e6;
+  }
+
+  .finale cite {
+    display: block;
+    margin-top: 1rem;
+    font-style: normal;
+    font-size: .8rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 1.8rem 1.5rem 2.8rem;
+    color: #9a9282;
+    font-size: .72rem;
+    line-height: 1.7;
+    border-top: 1px solid var(--line);
+    margin-top: 2rem;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-photo { aspect-ratio: 16 / 10; order: -1; }
+    .work-grid { grid-template-columns: 1fr 1fr; }
+    .facts-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { gap: 1rem; }
+  }
+
+  @media (max-width: 480px) {
+    .work-grid { grid-template-columns: 1fr; }
+    .facts-grid { grid-template-columns: 1fr; }
+    .nav-links a:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-brand">Сергей Прокопик</span>
+    <ul class="nav-links">
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#work">Чем занимаюсь</a></li>
+      <li><a href="#facts">Факты</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-text">
+    <span class="badge">Директор ООО «ПНД Групп»</span>
+    <h1>Сергей Прокопик</h1>
+    <p class="tagline">Управляю производством и продажами, опираясь на системный подход, менеджмент и психологию.</p>
+  </div>
+  <div class="hero-photo">
+    <img src="images/portrait.jpg" alt="Сергей Прокопик">
+  </div>
+</header>
+
+<main>
+
+  <section id="about">
+    <div class="section-head"><span class="num">01</span><h2>Обо мне</h2></div>
+    <p>Меня зовут <strong>Сергей Прокопик</strong>, мне 43 года. Я директор предприятия <strong>ООО «ПНД Групп»</strong>.</p>
+    <p>Много читаю — в основном нон-фикшн: книги по <strong>психологии</strong> помогают лучше понимать людей, а по <strong>менеджменту</strong> — выстраивать процессы в компании так, чтобы команда работала слаженно, а не через силу. Отдельно интересуюсь темой <strong>продаж</strong>: как строить воронку, вести переговоры и растить в людях навык продавать — без этого не работает ни один бизнес, каким бы сильным ни был продукт. <strong>Спорт</strong> держу как обязательную часть рабочего ритма: регулярные тренировки помогают восстанавливать энергию и оставаться собранным при высокой нагрузке.</p>
+  </section>
+
+  <hr class="divider">
+
+  <section id="work">
+    <div class="section-head"><span class="num">02</span><h2>Чем занимаюсь</h2></div>
+    <p>Моя работа как директора <strong>ООО «ПНД Групп»</strong> строится вокруг двух ключевых направлений — управления производством и управления продажами. Эти процессы должны работать синхронно: производство без сбыта превращается в склад, а продажи без стабильного производства — в невыполнимые обещания клиентам.</p>
+
+    <div class="work-grid">
+      <div class="work-card">
+        <img src="images/production.jpg" alt="Производственная площадка">
+        <div class="work-card-body">
+          <h3>Управление производством</h3>
+          <p>Планирование загрузки мощностей, контроль качества на каждом этапе, устранение узких мест и снижение издержек без потери в качестве.</p>
+        </div>
+      </div>
+      <div class="work-card">
+        <img src="images/meeting.jpg" alt="Переговоры и встречи с партнёрами">
+        <div class="work-card-body">
+          <h3>Управление продажами</h3>
+          <p>Воронка, стандарты переговоров, система мотивации менеджеров — контроль конверсии на каждом этапе сделки.</p>
+        </div>
+      </div>
+      <div class="work-card">
+        <img src="images/gears.jfif" alt="Слаженная работа процессов">
+        <div class="work-card-body">
+          <h3>Как это связано</h3>
+          <p>Любое изменение в производстве оцениваю с точки зрения обещаний отдела продаж — и наоборот. Опираюсь на менеджмент и психологию.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="facts">
+    <div class="section-head"><span class="num">03</span><h2>Интересные факты</h2></div>
+    <div class="facts-grid">
+      <div class="fact-card"><span class="fact-mark">”</span><strong>Сделка, которую спасла пауза.</strong> На переговорах клиент за пять минут до подписания замолчал: «Мне нужно подумать». Вместо того чтобы дожимать, предложил кофе и сменил тему. Через полчаса он сам вернулся к контракту — и подписал на бóльших объёмах.</div>
+      <div class="fact-card"><span class="fact-mark">”</span><strong>Продавец, который боялся звонить.</strong> Взял в команду толкового, но неуверенного менеджера. Прописали ему скрипт первых десяти секунд разговора — и через месяц он закрывал больше сделок, чем «прирождённые» продавцы.</div>
+      <div class="fact-card"><span class="fact-mark">”</span><strong>Клиент, который вернулся через три года.</strong> Когда-то сорвалась крупная сделка — не сошлись по цене. Расстались вежливо. Через три года клиент написал сам: вспомнил, что с нами было комфортно работать даже тогда.</div>
+      <div class="fact-card"><span class="fact-mark">”</span><strong>Конвейер, который остановился в пятницу.</strong> Линия встала за два часа до отгрузки крупной партии. Собрали смену прямо у станка и за 40 минут нашли причину. С тех пор пятничный чек-лист по оборудованию — отдельная традиция.</div>
+      <div class="fact-card"><span class="fact-mark">”</span><strong>Брак, который нашли до отгрузки.</strong> Упаковщица заметила едва заметное отклонение в партии — на глаз, без приборов. Партию остановили, дефект подтвердился. Её интуиции в цехе теперь доверяют не меньше, чем датчикам.</div>
+      <div class="fact-card"><span class="fact-mark">”</span><strong>Смена, которая сама предложила улучшение.</strong> Рабочие с линии сами предложили изменить порядок операций — потому что видели процесс изнутри лучше любого менеджера. Прислушались — производительность участка заметно выросла.</div>
+    </div>
+  </section>
+
+  <section class="finale-wrap">
+    <div class="finale">
+      <img src="images/dog.jpg" alt="Атмосферное фото">
+      <blockquote>
+        Результат — это не про везение, а про систему: понятные процессы, сильная команда и дисциплина, которая не зависит от настроения.
+        <cite>Сергей Прокопик</cite>
+      </blockquote>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Фото: личный архив.</p>
+</footer>
+
+</body>
+</html>

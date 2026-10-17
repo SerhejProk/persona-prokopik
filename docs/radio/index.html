@@ -310,7 +310,6 @@
       <option value="BY">Беларусь</option>
       <option value="KZ">Казахстан</option>
       <option value="PL">Польша</option>
-      <option value="UA">Украина</option>
       <option value="US">США</option>
       <option value="GB">Великобритания</option>
       <option value="DE">Германия</option>
@@ -496,8 +495,10 @@ async function loadIds(ids) {
   $("status").textContent = "Загружаю станции…";
   $("grid").innerHTML = "";
   try {
-    const list = await api("/json/stations/byuuid?uuids=" + ids.join(","));
+    let list = await api("/json/stations/byuuid?uuids=" + ids.join(","));
     list.sort((a, b) => ids.indexOf(a.stationuuid) - ids.indexOf(b.stationuuid));
+    // Станции Украины не показываем
+    list = list.filter(s => s.countrycode !== "UA");
     render(list);
   } catch (e) {
     $("status").textContent = "Не удалось загрузить каталог. Проверьте интернет и попробуйте ещё раз.";
@@ -518,6 +519,8 @@ async function search({ name = "", tag = "", country = "" } = {}) {
       p.delete("name"); p.set("tag", name.toLowerCase());
       list = await api("/json/stations/search?" + p);
     }
+    // Станции Украины не показываем
+    list = list.filter(s => s.countrycode !== "UA");
     render(list);
   } catch (e) {
     $("status").textContent = "Не удалось загрузить каталог. Проверьте интернет и попробуйте ещё раз.";

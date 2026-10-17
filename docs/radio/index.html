@@ -9,6 +9,27 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<!-- Превью ссылки в Telegram/WhatsApp: пересылать надо ссылку, а не файл -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="РАДИО">
+<meta property="og:description" content="Тысячи радиостанций со всего мира: Россия, Беларусь, Казахстан, жанры, избранное.">
+<meta property="og:url" content="https://serhejprok.github.io/persona-prokopik/radio/">
+<meta property="og:image" content="https://serhejprok.github.io/persona-prokopik/radio/icon-512.png">
+<meta name="description" content="Тысячи радиостанций со всего мира: Россия, Беларусь, Казахстан, жанры, избранное.">
+<script>
+// Где открыта страница. Радио работает только как сайт в обычном браузере:
+// - файл, пересланный в Telegram, открывается в просмотрщике, где сеть и скрипты не работают;
+// - встроенный браузер Telegram глушит звук, когда сворачиваешь Telegram.
+// Скрипт сам уводит со страницы-файла на сайт; если скрипты отключены — остаётся видимая кнопка.
+(function () {
+  var SITE = "https://serhejprok.github.io/persona-prokopik/radio/";
+  var root = document.documentElement;
+  if (!/^https?:$/.test(location.protocol)) { location.replace(SITE); return; }
+  root.className += " web";
+  var tg = window.TelegramWebviewProxy || window.TelegramWebview || /Telegram/i.test(navigator.userAgent);
+  if (tg) root.className += " tg";
+})();
+</script>
 <script async src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <script>
 // Тема по времени суток: с 7:00 до 20:00 светлая, остальное время тёмная. Проверяем раз в минуту.
@@ -122,6 +143,18 @@
   .vol::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--bg);
     border: 3px solid var(--accent); box-shadow: var(--out-sm); }
   .empty { color: var(--muted); padding: 30px 0; text-align: center; grid-column: 1 / -1; }
+  /* Плашка «Открыть в браузере»: видна в пересланном файле (там скрипты не работают) и во встроенном браузере Telegram */
+  .openweb { display: block; margin: 0 0 18px; padding: 14px 16px; border-radius: 16px; background: var(--bg);
+    box-shadow: var(--out); border: 1px solid var(--edge); color: var(--text); }
+  .openweb b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .openweb a.go { display: block; margin-top: 10px; padding: 12px; border-radius: 14px; text-align: center;
+    font-weight: 700; color: #fff; background: var(--accent); text-decoration: none; }
+  .openweb small { display: block; margin-top: 8px; color: var(--muted); }
+  .web .openweb { display: none; }
+  .web.tg .openweb { display: block; }
+  .openweb .tg-only { display: none; }
+  .tg .openweb .tg-only { display: block; }
+  .tg .openweb .file-only { display: none; }
   button, .card { -webkit-tap-highlight-color: transparent; }
   /* На телефоне громкость регулируют кнопками на корпусе — ползунок только мешает названию */
   @media (max-width: 520px) { .volbox { display: none; } h1 { font-size: 22px; } .grid { gap: 14px; }
@@ -132,6 +165,14 @@
 <div class="waves" aria-hidden="true"></div>
 <div class="antenna" aria-hidden="true"><i></i><i></i><i></i></div>
 <header>
+  <div class="openweb" id="openweb">
+    <b class="file-only">Радио работает только в браузере</b>
+    <b class="tg-only">Откройте радио в браузере</b>
+    <span class="file-only">Вы открыли файл. Нажмите кнопку — радио откроется в Safari или Chrome.</span>
+    <span class="tg-only">В Telegram звук пропадёт, как только вы свернёте приложение.</span>
+    <a class="go" id="openwebBtn" href="https://serhejprok.github.io/persona-prokopik/radio/" target="_blank" rel="noopener">Открыть в браузере ↗</a>
+    <small class="tg-only">Если кнопка не сработала: нажмите ⋯ вверху справа → «Открыть в Safari» / «Открыть в браузере».</small>
+  </div>
   <h1>РАДИО</h1>
   <p class="sub">Тысячи станций со всего мира. Каталог: radio-browser.info</p>
   <form class="search" id="form">
@@ -158,7 +199,7 @@
 </header>
 
 <main>
-  <div class="status" id="status">Если станции не появляются — откройте эту страницу в Safari или Chrome по ссылке serhejprok.github.io/persona-prokopik/radio/ (в режиме просмотра файла радио не работает).</div>
+  <div class="status" id="status">Если станции не появляются — откройте радио в Safari или Chrome по ссылке <a href="https://serhejprok.github.io/persona-prokopik/radio/" target="_blank" rel="noopener">serhejprok.github.io/persona-prokopik/radio/</a></div>
   <div class="grid" id="grid"></div>
 </main>
 
@@ -218,6 +259,15 @@ function store(key, val) {
   } catch (e) { return null; }
 }
 let favs = store("radio.favs") || [];
+// Во встроенном браузере Telegram кнопка ведёт во внешний браузер:
+// на айфоне — схема x-safari-https (iOS 17+), на Android — intent, который откроет браузер по умолчанию
+if (/\btg\b/.test(document.documentElement.className)) {
+  const site = "serhejprok.github.io/persona-prokopik/radio/";
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua)) $("openwebBtn").href = "x-safari-https://" + site;
+  else if (/Android/.test(ua)) $("openwebBtn").href = "intent://" + site + "#Intent;scheme=https;S.browser_fallback_url=https%3A%2F%2F" + encodeURIComponent(site) + ";end";
+  $("openwebBtn").textContent = /iPhone|iPad|iPod/.test(ua) ? "Открыть в Safari ↗" : "Открыть в браузере ↗";
+}
 // На https-сайте (GitHub Pages) браузер не пускает http-потоки, поэтому там показываем только защищённые
 if (location.protocol === "https:") {
   $("httpsOnly").checked = true;

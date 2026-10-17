@@ -29,17 +29,19 @@
   :root {
     --bg: #e4e8ee; --text: #2d3748; --muted: #718096; --accent: #2b6cb0;
     --light: #ffffff; --dark: #b8bec7; --ring: rgba(43, 108, 176, .13);
+    --page: var(--bg); --edge: transparent;
     --out: 6px 6px 12px var(--dark), -6px -6px 12px var(--light);
     --out-sm: 3px 3px 6px var(--dark), -3px -3px 6px var(--light);
     --in: inset 4px 4px 8px var(--dark), inset -4px -4px 8px var(--light);
     --in-sm: inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light);
   }
+  /* Ночью кнопки и карточки светлее фона и с тонким светлым кантом — чтобы не сливались с темнотой */
   :root[data-theme="night"] {
-    --bg: #2a2d34; --text: #e2e8f0; --muted: #94a0b4; --accent: #63b3ed;
-    --light: #353943; --dark: #1b1d21; --ring: rgba(99, 179, 237, .12);
+    --page: #1a1c21; --bg: #2f333c; --text: #edf2f7; --muted: #a0aec0; --accent: #63b3ed;
+    --light: #414753; --dark: #101114; --ring: rgba(99, 179, 237, .12); --edge: rgba(255, 255, 255, .09);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
+  body { margin: 0; background: var(--page); color: var(--text);
     font: 15px/1.45 "Segoe UI", system-ui, sans-serif; padding-bottom: 120px; }
   /* Неподвижный слой с волнами (background-attachment: fixed не работает на айфоне), к краям волны тают */
   .waves { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none; overflow: hidden;
@@ -65,6 +67,7 @@
   .search select { flex: 0 1 180px; cursor: pointer; }
   .search input::placeholder { color: var(--muted); }
   button { font: inherit; cursor: pointer; border: 0; background: var(--bg); color: var(--text); }
+  .btn, .chip, .fav, .play, .card { border: 1px solid var(--edge); }
   .btn, .chip, .fav, .play, .card { transition: box-shadow .15s, color .15s, transform .1s; }
   .btn { padding: 12px 22px; border-radius: 14px; font-weight: 600; color: var(--accent); box-shadow: var(--out); }
   .btn:hover, .chip:hover, .fav:hover { color: var(--accent); }

@@ -160,6 +160,17 @@
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cellipse cx='30' cy='34' rx='13' ry='16' fill='rgb(244,114,182)' fill-opacity='.35'/%3E%3Cpath d='M30 50q-4 10 2 20t-2 22' stroke='rgb(244,114,182)' stroke-opacity='.3' fill='none' stroke-width='1.2'/%3E%3Cellipse cx='118' cy='96' rx='11' ry='14' fill='rgb(96,165,250)' fill-opacity='.35'/%3E%3Cpath d='M118 110q4 9 -2 18t2 20' stroke='rgb(96,165,250)' stroke-opacity='.3' fill='none' stroke-width='1.2'/%3E%3Cpath d='M110 22l3.5 7 7.5 1-5.5 5 1.5 7.5-7-3.8-7 3.8 1.5-7.5-5.5-5 7.5-1z' fill='rgb(250,204,21)' fill-opacity='.45'/%3E%3Cpath d='M40 120l2.5 5 5.5.8-4 3.8 1 5.4-5-2.6-5 2.6 1-5.4-4-3.8 5.5-.8z' fill='rgb(52,211,153)' fill-opacity='.45'/%3E%3Cg fill='rgb(255,255,255)' fill-opacity='.28'%3E%3Cellipse cx='75' cy='70' rx='18' ry='8'/%3E%3Cellipse cx='66' cy='64' rx='9' ry='8'/%3E%3Cellipse cx='82' cy='62' rx='11' ry='10'/%3E%3C/g%3E%3Ccircle cx='145' cy='145' r='3' fill='rgb(167,139,250)' fill-opacity='.5'/%3E%3Ccircle cx='8' cy='92' r='2.5' fill='rgb(251,146,60)' fill-opacity='.5'/%3E%3C/svg%3E") 0 0 / 160px 160px,
       radial-gradient(circle at 0% 100%, rgba(96, 165, 250, .25), transparent 50%),
       radial-gradient(circle at 30% 30%, rgba(244, 114, 182, .14), transparent 45%); }
+  /* Обучение — тетрадь в клетку с красными полями, в углу шапочка выпускника, книга и «облачка» с буквами разных языков */
+  [data-style="study"] .waves {
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220' font-family='Georgia,serif' font-weight='bold'%3E%3Cpath d='M110 40L180 68L110 96L40 68Z' fill='rgb(30,58,138)' fill-opacity='.4'/%3E%3Cpath d='M72 82v26q38 22 76 0V82L110 96Z' fill='rgb(30,58,138)' fill-opacity='.3'/%3E%3Cpath d='M180 68v34' stroke='rgb(202,138,4)' stroke-opacity='.6' stroke-width='2'/%3E%3Ccircle cx='180' cy='106' r='5' fill='rgb(202,138,4)' fill-opacity='.6'/%3E%3Cpath d='M50 150q30-12 60 0q30-12 60 0v50q-30-12-60 0q-30-12-60 0Z' fill='none' stroke='rgb(30,58,138)' stroke-opacity='.35' stroke-width='2'/%3E%3Cpath d='M110 150v50' stroke='rgb(30,58,138)' stroke-opacity='.35' stroke-width='2'/%3E%3Cpath d='M62 165q20-6 38 0M62 178q20-6 38 0M120 165q20-6 38 0M120 178q20-6 38 0' stroke='rgb(30,58,138)' stroke-opacity='.22' stroke-width='1.4' fill='none'/%3E%3Crect x='4' y='6' width='42' height='30' rx='8' fill='rgb(220,38,38)' fill-opacity='.16'/%3E%3Ctext x='25' y='28' text-anchor='middle' font-size='18' fill='rgb(220,38,38)' fill-opacity='.55'%3EAa%3C/text%3E%3Crect x='150' y='2' width='34' height='30' rx='8' fill='rgb(22,163,74)' fill-opacity='.16'/%3E%3Ctext x='167' y='24' text-anchor='middle' font-size='18' fill='rgb(22,163,74)' fill-opacity='.6'%3E%D0%AF%3C/text%3E%3Crect x='184' y='126' width='34' height='30' rx='8' fill='rgb(202,138,4)' fill-opacity='.18'/%3E%3Ctext x='201' y='148' text-anchor='middle' font-size='18' fill='rgb(161,98,7)' fill-opacity='.6'%3E%E6%96%87%3C/text%3E%3C/svg%3E") no-repeat right -10px top 20px / 300px 300px,
+      linear-gradient(90deg, transparent 0 36px, rgba(220, 38, 38, .30) 36px 38px, transparent 38px),
+      linear-gradient(rgba(59, 130, 246, .13) 1px, transparent 1px) 0 0 / 22px 22px,
+      linear-gradient(90deg, rgba(59, 130, 246, .13) 1px, transparent 1px) 0 0 / 22px 22px,
+      radial-gradient(circle at 85% 15%, rgba(59, 130, 246, .18), transparent 45%),
+      radial-gradient(circle at 10% 95%, rgba(202, 138, 4, .14), transparent 50%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 35%, rgba(0,0,0,.5));
+    mask-image: linear-gradient(to bottom, #000 35%, rgba(0,0,0,.5)); }
   @keyframes drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
   @media (prefers-reduced-motion: reduce) { [data-style="chill"] .waves { animation: none; } }
   /* Антенна и бегущие волны, пока играет станция */
@@ -373,6 +384,23 @@ const PRESETS = [
     "bcf65bb3-a449-40c2-9159-dda8d4792b19",
     "68f52212-e3b0-479b-9da6-962a6c5e713d",
     "3c2da98e-b7b7-4192-8ca4-3a625a301629"
+  ] },
+  // «Обучение» — вручную: языки (английский, китайский, Морзе), история, лекции. Проверены 17.10.2026, все по https
+  { label: "Обучение", bg: "study", ids: [
+    "3fefef81-0b20-4193-9dc7-c5839f5391eb",
+    "3f537d76-6041-4200-8804-c5b9f618ab5a",
+    "fd200b5d-0137-4a87-8afc-3275da795c2a",
+    "49476d42-0ff1-4de2-b083-0c55a7231d55",
+    "eecbb174-db4f-4bb1-95a2-96fc60312f84",
+    "4540380c-8d7c-49da-b0dc-699c1fb30ebc",
+    "7c4fb276-5340-4e47-8c1c-8cacae66f98a",
+    "98137c5f-fd3b-4d5c-8e91-12752b81396d",
+    "adca3071-8636-4114-a18e-2d458054ed58",
+    "05ee93a8-e030-40a8-89a8-713890672ee5",
+    "c055fc23-49fb-42a2-a84b-992081fb4ee3",
+    "8e979832-71a9-4f4e-ace1-3e6e494a027a",
+    "140cbc06-7365-40c8-b81e-564f55e7f290",
+    "31b735e5-f940-44e2-bcbb-b0af1d34b5e5"
   ] },
   // «Детям» — вручную: русские станции первыми, дальше проверенные зарубежные. Проверены 17.10.2026
   { label: "Детям", bg: "kids", ids: [

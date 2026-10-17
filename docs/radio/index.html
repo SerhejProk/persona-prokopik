@@ -105,15 +105,22 @@
   .play:disabled { color: var(--muted); cursor: default; }
   .now { flex: 1; min-width: 0; }
   .now .name { font-size: 16px; }
-  .vol { -webkit-appearance: none; appearance: none; width: 130px; height: 10px; border-radius: 5px;
-    background: var(--bg); box-shadow: var(--in-sm); outline: 0; }
+  /* Громкость: кнопки − и +, заполненная часть дорожки акцентным цветом */
+  .volbox { display: flex; align-items: center; gap: 10px; flex: none; }
+  .vbtn { width: 34px; height: 34px; border-radius: 50%; padding: 0; font-size: 20px; line-height: 1; font-weight: 700;
+    color: var(--accent); box-shadow: var(--out-sm); border: 1px solid var(--edge); flex: none; }
+  .vbtn:active { box-shadow: var(--in-sm); }
+  .vol { -webkit-appearance: none; appearance: none; width: 130px; height: 10px; border-radius: 5px; outline: 0; margin: 0;
+    background: linear-gradient(to right, var(--accent) 0, var(--accent) var(--v, 80%), transparent var(--v, 80%));
+    box-shadow: var(--in-sm); border: 1px solid var(--edge); cursor: pointer; }
   .vol::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
-    background: var(--bg); box-shadow: var(--out-sm); cursor: pointer; border: 0; }
-  .vol::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--bg); box-shadow: var(--out-sm); border: 0; }
+    background: var(--bg); border: 3px solid var(--accent); box-shadow: var(--out-sm); cursor: pointer; }
+  .vol::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--bg);
+    border: 3px solid var(--accent); box-shadow: var(--out-sm); }
   .empty { color: var(--muted); padding: 30px 0; text-align: center; grid-column: 1 / -1; }
   button, .card { -webkit-tap-highlight-color: transparent; }
   /* На телефоне громкость регулируют кнопками на корпусе — ползунок только мешает названию */
-  @media (max-width: 520px) { .vol { display: none; } h1 { font-size: 22px; } .grid { gap: 14px; }
+  @media (max-width: 520px) { .volbox { display: none; } h1 { font-size: 22px; } .grid { gap: 14px; }
     .search select { flex: 1 1 100%; } .btn { flex: 1 1 100%; } }
 </style>
 </head>
@@ -159,7 +166,11 @@
       <div class="name" id="nowName">Выберите станцию</div>
       <div class="meta" id="nowMeta">&nbsp;</div>
     </div>
-    <input class="vol" id="vol" type="range" min="0" max="1" step="0.01" value="0.8" title="Громкость">
+    <div class="volbox">
+      <button class="vbtn" id="volDown" title="Тише" aria-label="Тише">−</button>
+      <input class="vol" id="vol" type="range" min="0" max="1" step="0.01" value="0.8" title="Громкость" aria-label="Громкость">
+      <button class="vbtn" id="volUp" title="Громче" aria-label="Громче">+</button>
+    </div>
   </div>
 </div>
 
@@ -210,8 +221,15 @@ if (location.protocol === "https:") {
 } else {
   $("httpsOnly").checked = store("radio.httpsOnly") === true;
 }
+function setVol(v) {
+  v = Math.min(1, Math.max(0, Math.round(v * 100) / 100));
+  audio.volume = v;
+  $("vol").value = v;
+  $("vol").style.setProperty("--v", (v * 100) + "%"); // заливка дорожки до бегунка
+  store("radio.vol", v);
+}
 const savedVol = store("radio.vol");
-audio.volume = $("vol").value = (typeof savedVol === "number") ? savedVol : 0.8;
+setVol((typeof savedVol === "number") ? savedVol : 0.8);
 
 async function api(path) {
   let lastErr;
@@ -406,7 +424,9 @@ $("play").onclick = () => {
     audio.pause();
   }
 };
-$("vol").oninput = e => { audio.volume = e.target.value; store("radio.vol", +e.target.value); };
+$("vol").oninput = e => setVol(+e.target.value);
+$("volDown").onclick = () => setVol(audio.volume - 0.1);
+$("volUp").onclick = () => setVol(audio.volume + 0.1);
 $("httpsOnly").onchange = e => { store("radio.httpsOnly", e.target.checked); render(lastListRaw); };
 
 function setChip(i) {

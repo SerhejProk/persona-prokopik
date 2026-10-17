@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#e4e8ee">
-<title>Интернет-радио</title>
+<title>РАДИО</title>
+<meta name="apple-mobile-web-app-title" content="РАДИО">
 <script async src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <script>
 // Тема по времени суток: с 7:00 до 20:00 светлая, остальное время тёмная. Проверяем раз в минуту.
@@ -128,7 +129,7 @@
 <div class="waves" aria-hidden="true"></div>
 <div class="antenna" aria-hidden="true"><i></i><i></i><i></i></div>
 <header>
-  <h1>Интернет-радио</h1>
+  <h1>РАДИО</h1>
   <p class="sub">Тысячи станций со всего мира. Каталог: radio-browser.info</p>
   <form class="search" id="form">
     <input id="q" type="search" placeholder="Название станции или жанр…" autocomplete="off">
@@ -398,7 +399,7 @@ function playStation(s) {
 function setMediaSession(s) {
   if (!("mediaSession" in navigator)) return;
   const art = logoSources(s).slice(0, 1).map(src => ({ src, sizes: "512x512" }));
-  navigator.mediaSession.metadata = new MediaMetadata({ title: s.name.trim(), artist: "Интернет-радио", artwork: art });
+  navigator.mediaSession.metadata = new MediaMetadata({ title: s.name.trim(), artist: "РАДИО", artwork: art });
   navigator.mediaSession.setActionHandler("play", () => playStation(current));
   navigator.mediaSession.setActionHandler("pause", () => audio.pause());
 }

@@ -151,6 +151,15 @@
       radial-gradient(ellipse at 50% 100%, rgba(185, 28, 28, .18), transparent 55%);
     -webkit-mask-image: linear-gradient(to bottom, #000, rgba(0,0,0,.25) 45%, rgba(0,0,0,.25) 70%, #000);
     mask-image: linear-gradient(to bottom, #000, rgba(0,0,0,.25) 45%, rgba(0,0,0,.25) 70%, #000); }
+  /* Детям — радуга в углу, воздушные шарики, звёздочки и облака, пастельные цвета */
+  [data-style="kids"] .waves {
+    background:
+      radial-gradient(circle at 100% 0%, transparent 0 110px, rgba(239, 68, 68, .28) 110px 124px, rgba(249, 115, 22, .28) 124px 138px,
+        rgba(250, 204, 21, .30) 138px 152px, rgba(34, 197, 94, .26) 152px 166px, rgba(59, 130, 246, .26) 166px 180px,
+        rgba(139, 92, 246, .26) 180px 194px, transparent 194px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cellipse cx='30' cy='34' rx='13' ry='16' fill='rgb(244,114,182)' fill-opacity='.35'/%3E%3Cpath d='M30 50q-4 10 2 20t-2 22' stroke='rgb(244,114,182)' stroke-opacity='.3' fill='none' stroke-width='1.2'/%3E%3Cellipse cx='118' cy='96' rx='11' ry='14' fill='rgb(96,165,250)' fill-opacity='.35'/%3E%3Cpath d='M118 110q4 9 -2 18t2 20' stroke='rgb(96,165,250)' stroke-opacity='.3' fill='none' stroke-width='1.2'/%3E%3Cpath d='M110 22l3.5 7 7.5 1-5.5 5 1.5 7.5-7-3.8-7 3.8 1.5-7.5-5.5-5 7.5-1z' fill='rgb(250,204,21)' fill-opacity='.45'/%3E%3Cpath d='M40 120l2.5 5 5.5.8-4 3.8 1 5.4-5-2.6-5 2.6 1-5.4-4-3.8 5.5-.8z' fill='rgb(52,211,153)' fill-opacity='.45'/%3E%3Cg fill='rgb(255,255,255)' fill-opacity='.28'%3E%3Cellipse cx='75' cy='70' rx='18' ry='8'/%3E%3Cellipse cx='66' cy='64' rx='9' ry='8'/%3E%3Cellipse cx='82' cy='62' rx='11' ry='10'/%3E%3C/g%3E%3Ccircle cx='145' cy='145' r='3' fill='rgb(167,139,250)' fill-opacity='.5'/%3E%3Ccircle cx='8' cy='92' r='2.5' fill='rgb(251,146,60)' fill-opacity='.5'/%3E%3C/svg%3E") 0 0 / 160px 160px,
+      radial-gradient(circle at 0% 100%, rgba(96, 165, 250, .25), transparent 50%),
+      radial-gradient(circle at 30% 30%, rgba(244, 114, 182, .14), transparent 45%); }
   @keyframes drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
   @media (prefers-reduced-motion: reduce) { [data-style="chill"] .waves { animation: none; } }
   /* Антенна и бегущие волны, пока играет станция */
@@ -230,7 +239,6 @@
   #nowMeta.marq .track span { padding-right: 3em; }
   #nowMeta .song { color: var(--accent); font-weight: 600; }
   @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  @media (prefers-reduced-motion: reduce) { #nowMeta.marq .track { animation: none; } }
   .empty { color: var(--muted); padding: 30px 0; text-align: center; grid-column: 1 / -1; }
   /* Плашка «Открыть в браузере»: видна в пересланном файле (там скрипты не работают) и во встроенном браузере Telegram */
   .openweb { display: block; margin: 0 0 18px; padding: 14px 16px; border-radius: 16px; background: var(--bg);
@@ -365,6 +373,23 @@ const PRESETS = [
     "bcf65bb3-a449-40c2-9159-dda8d4792b19",
     "68f52212-e3b0-479b-9da6-962a6c5e713d",
     "3c2da98e-b7b7-4192-8ca4-3a625a301629"
+  ] },
+  // «Детям» — вручную: русские станции первыми, дальше проверенные зарубежные. Проверены 17.10.2026
+  { label: "Детям", bg: "kids", ids: [
+    "464bcd7d-6be6-4ae2-9232-38dda51effc7",
+    "3f165fb8-873a-413b-8e09-ed389d9e0d18",
+    "4c91b144-6ca1-462e-ab10-070ffb56a3b8",
+    "38ba7b0a-9b14-4c05-a074-8602a59a1773",
+    "1d2fb3d8-a109-4dfd-ba6f-9951414e811b",
+    "6ebbea93-0ba5-441b-8fbc-51c586d361e3",
+    "ff871225-7731-45a1-aee0-9e8fa463dfc3",
+    "e8d66981-99a5-4149-b34e-8d4924422cb5",
+    "9e872eab-3ac9-4d55-a104-b4a59d589af3",
+    "6f49ac73-88fc-4fa0-907f-2211bd9e021f",
+    "0c1614d3-db11-447c-9da8-42107929fae6",
+    "c860e4f1-6368-4122-9515-3beae17f4c97",
+    "73c83d14-715a-47e3-bbc1-7354a8955339",
+    "02d57c4d-b7c9-4b3d-a3e8-2cdcc3b66b51"
   ] },
   { label: "Новости", tag: "news" },
 ];
@@ -571,7 +596,7 @@ function playStation(s) {
   current = s;
   store("radio.last", s);
   $("nowName").textContent = s.name.trim();
-  stopMarquee("Подключаюсь…");
+  setMarquee("Подключаюсь…");
   $("nowLogo").replaceWith(Object.assign(logoEl(s), { id: "nowLogo" }));
   $("play").disabled = false;
   markPlaying();
@@ -608,7 +633,7 @@ function nextUrl() {
   const urls = current.urls || [current.url_resolved];
   if (urlIndex + 1 < urls.length) {
     urlIndex++;
-    stopMarquee("Пробую другой адрес станции…");
+    setMarquee("Пробую другой адрес станции…");
     connect();
   } else {
     if (hls) { hls.destroy(); hls = null; }
@@ -620,8 +645,8 @@ function nextUrl() {
 // Бегущая строка: что за станция и что играет. Название песни берём из открытых сервисов
 // вещательных платформ (SomaFM, radio.co, AzuraCast, RadioKing) или у сервера Icecast (status-json.xsl).
 // Если станция ничего не сообщает — в строке только станция, страна, жанр и битрейт.
-let nowSong = "", songTimer = null;
-function setMarquee() {
+let nowSong = "", songTimer = null, userPaused = false;
+function setMarquee(note) {
   const el = $("nowMeta");
   const parts = [current.name.trim(), current.country, (current.tags || "").split(",").filter(Boolean).slice(0, 3).join(", "),
     current.bitrate ? current.bitrate + " kbps" : ""].filter(Boolean);
@@ -632,7 +657,7 @@ function setMarquee() {
       const b = document.createElement("b"); b.className = "song"; b.textContent = "♪ " + nowSong;
       sp.appendChild(b); sp.appendChild(document.createTextNode(" · "));
     }
-    sp.appendChild(document.createTextNode("В эфире: " + parts.join(" · ")));
+    sp.appendChild(document.createTextNode((note ? note + " · " : "В эфире: ") + parts.join(" · ")));
   });
   const len = el.querySelector(".track > span").textContent.length;
   el.style.setProperty("--dur", Math.max(10, Math.round(len * 0.28)) + "s"); // скорость одинаковая при любой длине
@@ -707,8 +732,9 @@ function failed() {
 }
 
 audio.addEventListener("playing", () => { clearTimeout(connectTimer); $("play").textContent = "❚❚"; $("play").classList.add("on"); document.documentElement.classList.add("on-air"); setMarquee(); watchSong(); });
-audio.addEventListener("pause", () => { $("play").textContent = "▶"; $("play").classList.remove("on"); document.documentElement.classList.remove("on-air"); clearInterval(songTimer); });
-audio.addEventListener("waiting", () => { stopMarquee("Буферизация…"); });
+audio.addEventListener("pause", () => { $("play").textContent = "▶"; $("play").classList.remove("on"); document.documentElement.classList.remove("on-air"); clearInterval(songTimer);
+  if (userPaused) { userPaused = false; stopMarquee("Пауза — нажмите ▶"); } });
+audio.addEventListener("waiting", () => { setMarquee("Буферизация…"); });
 audio.addEventListener("error", () => { if (audio.getAttribute("src") && current) nextUrl(); });
 
 $("play").onclick = () => {
@@ -718,6 +744,7 @@ $("play").onclick = () => {
     playStation(current);
   } else {
     clearTimeout(connectTimer);
+    userPaused = true; // паузу нажал человек, а не браузер при смене станции
     audio.pause();
   }
 };

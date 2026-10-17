@@ -256,6 +256,19 @@
   #nowMeta.marq .track span { padding-right: 3em; }
   #nowMeta .song { color: var(--accent); font-weight: 600; }
   @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  /* Кнопка «♥ записать трек» в плеере и записная книжка */
+  .save { width: 44px; height: 44px; border-radius: 50%; padding: 0; font-size: 20px; flex: none; color: var(--accent);
+    border: 1px solid var(--edge); box-shadow: var(--out-sm); transition: box-shadow .15s, transform .1s; }
+  .save:active:not(:disabled) { box-shadow: var(--in-sm); transform: scale(.95); }
+  .save:disabled { color: var(--muted); opacity: .5; cursor: default; }
+  .save.done { box-shadow: var(--in-sm); }
+  .notes-bar { grid-column: 1 / -1; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: 13px; }
+  .notes-bar .btn { padding: 8px 16px; font-size: 14px; }
+  .note .info .name { white-space: normal; }
+  .note .acts { display: flex; gap: 8px; flex: none; }
+  .note .acts a, .note .acts button { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; padding: 0;
+    font-size: 14px; text-decoration: none; color: var(--muted); border: 1px solid var(--edge); box-shadow: var(--out-sm); background: var(--bg); }
+  .note .acts a:hover, .note .acts button:hover { color: var(--accent); }
   .empty { color: var(--muted); padding: 30px 0; text-align: center; grid-column: 1 / -1; }
   /* Плашка «Открыть в браузере»: видна в пересланном файле (там скрипты не работают) и во встроенном браузере Telegram */
   .openweb { display: block; margin: 0 0 18px; padding: 14px 16px; border-radius: 16px; background: var(--bg);
@@ -326,6 +339,7 @@
       <div class="name" id="nowName">Выберите станцию</div>
       <div class="meta" id="nowMeta">&nbsp;</div>
     </div>
+    <button class="save" id="save" type="button" disabled title="Записать трек в записную книжку" aria-label="Записать трек">♥</button>
     <div class="volbox">
       <button class="vbtn" id="volDown" title="Тише" aria-label="Тише">−</button>
       <input class="vol" id="vol" type="range" min="0" max="1" step="0.01" value="0.8" title="Громкость" aria-label="Громкость">
@@ -349,6 +363,7 @@ const SERVERS = ["https://de1.api.radio-browser.info", "https://nl1.api.radio-br
                  "https://at1.api.radio-browser.info", "https://de2.api.radio-browser.info"];
 const PRESETS = [
   { label: "★ Избранное", fav: true },
+  { label: "📒 Записная книжка", notes: true },
   { label: "Популярное в России", country: "RU" },
   { label: "Беларусь", country: "BY" },
   { label: "Казахстан", country: "KZ" },
@@ -785,11 +800,88 @@ function failed() {
   $("play").classList.remove("on");
 }
 
-audio.addEventListener("playing", () => { clearTimeout(connectTimer); $("play").textContent = "❚❚"; $("play").classList.add("on"); document.documentElement.classList.add("on-air"); setMarquee(); watchSong(); });
-audio.addEventListener("pause", () => { $("play").textContent = "▶"; $("play").classList.remove("on"); document.documentElement.classList.remove("on-air"); clearInterval(songTimer);
+audio.addEventListener("playing", () => { clearTimeout(connectTimer); $("play").textContent = "❚❚"; $("play").classList.add("on"); document.documentElement.classList.add("on-air"); $("save").disabled = false; setMarquee(); watchSong(); });
+audio.addEventListener("pause", () => { $("play").textContent = "▶"; $("play").classList.remove("on"); document.documentElement.classList.remove("on-air"); $("save").disabled = true; clearInterval(songTimer);
   if (userPaused) { userPaused = false; stopMarquee("Пауза — нажмите ▶"); } });
 audio.addEventListener("waiting", () => { setMarquee("Буферизация…"); });
 audio.addEventListener("error", () => { if (audio.getAttribute("src") && current) nextUrl(); });
+
+// Записная книжка: кнопка ♥ запоминает, что сейчас играет (песня, станция, время). Хранится в этом браузере.
+// Если станция не сообщает песню — спрашиваем название, чтобы запись не была пустой
+let notes = store("radio.notes") || [];
+const pad = n => (n < 10 ? "0" : "") + n;
+function noteTime(t) {
+  const d = new Date(t);
+  return pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear() + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+function notesOpen() { const i = PRESETS.findIndex(p => p.notes); const c = document.querySelectorAll(".chip")[i]; return c && c.classList.contains("on"); }
+$("save").onclick = () => {
+  if (!current) return;
+  let song = nowSong;
+  if (!song) {
+    song = window.prompt("Станция не сообщает название песни. Впишите, что играет (или оставьте пустым — запишется станция и время):", "");
+    if (song === null) return; // нажали «Отмена»
+    song = song.trim();
+  }
+  const name = current.name.trim();
+  if (notes[0] && notes[0].song === song && notes[0].station === name && song) {
+    $("status").textContent = "Этот трек уже записан в книжку.";
+  } else {
+    notes.unshift({ song: song, station: name, time: Date.now(), s: current });
+    notes = notes.slice(0, 500);
+    store("radio.notes", notes);
+    $("status").textContent = "Записано в книжку: " + (song || name) + (song ? " (" + name + ")" : "");
+  }
+  $("save").classList.add("done");
+  setTimeout(() => $("save").classList.remove("done"), 600);
+  if (notesOpen()) renderNotes();
+};
+function renderNotes() {
+  const grid = $("grid");
+  grid.innerHTML = "";
+  $("status").textContent = notes.length ? "Записано треков: " + notes.length : "";
+  if (!notes.length) {
+    grid.innerHTML = '<div class="empty">Пока пусто. Когда играет песня, нажмите ♥ в плеере внизу — она запишется сюда.</div>';
+    return;
+  }
+  const bar = document.createElement("div");
+  bar.className = "notes-bar";
+  bar.innerHTML = '<button class="btn" type="button">⤓ Скачать список (.md для Obsidian)</button><span>Книжка хранится в этом браузере — на телефоне и компьютере она своя.</span>';
+  bar.firstChild.onclick = downloadNotes;
+  grid.appendChild(bar);
+  notes.forEach((n, i) => {
+    const c = document.createElement("div");
+    c.className = "card note";
+    c.appendChild(logoEl(n.s));
+    const info = document.createElement("div");
+    info.className = "info";
+    info.innerHTML = '<div class="name"></div><div class="meta"></div>';
+    info.firstChild.textContent = n.song ? "♪ " + n.song : n.station;
+    info.lastChild.textContent = (n.song ? n.station + " · " : "") + noteTime(n.time);
+    c.appendChild(info);
+    const acts = document.createElement("div");
+    acts.className = "acts";
+    const q = encodeURIComponent(n.song || n.station);
+    acts.innerHTML = '<button type="button" title="Включить станцию">▶</button>' +
+      (n.song ? '<a target="_blank" rel="noopener" title="Найти на YouTube" href="https://www.youtube.com/results?search_query=' + q + '">YT</a>' +
+                '<a target="_blank" rel="noopener" title="Найти в Яндекс Музыке" href="https://music.yandex.ru/search?text=' + q + '">Я</a>' : "") +
+      '<button type="button" title="Удалить из книжки">✕</button>';
+    acts.firstChild.onclick = () => playStation(n.s);
+    acts.lastChild.onclick = () => { notes.splice(i, 1); store("radio.notes", notes); renderNotes(); };
+    c.appendChild(acts);
+    grid.appendChild(c);
+  });
+}
+function downloadNotes() {
+  const lines = ["# Радио — записная книжка", ""].concat(notes.map(n =>
+    "- " + noteTime(n.time) + " — " + (n.song ? "**" + n.song + "** · " : "") + n.station));
+  const blob = new Blob([lines.join("\n") + "\n"], { type: "text/markdown;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Радио — записная книжка.md";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
 
 // Кнопка «Установить как приложение»: Edge/Chrome на компьютере и Android сами предлагают установку,
 // мы только показываем кнопку, когда браузер готов. Установленное радио — своё окно и своя иконка в панели задач
@@ -846,6 +938,8 @@ PRESETS.forEach((p, i) => {
     $("q").value = ""; $("country").value = p.country || "";
     if (p.ids) {
       loadIds(p.ids);
+    } else if (p.notes) {
+      renderNotes();
     } else if (p.fav) {
       render(favs);
       if (!favs.length) $("grid").innerHTML = '<div class="empty">Пока пусто. Нажмите ☆ у станции, чтобы добавить её сюда.</div>';
@@ -871,7 +965,7 @@ if (last) {
   $("nowLogo").replaceWith(Object.assign(logoEl(last), { id: "nowLogo" }));
   $("play").disabled = false;
 }
-setChip(1);
+setChip(PRESETS.findIndex(p => p.country === "RU" && !p.tag));
 search({ country: "RU" });
 </script>
 </body>

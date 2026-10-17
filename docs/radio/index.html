@@ -72,7 +72,70 @@
   .waves { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none; overflow: hidden;
     background: repeating-radial-gradient(circle at calc(100% - 44px) 44px, transparent 0 56px, var(--ring) 56px 58px);
     -webkit-mask-image: radial-gradient(circle at calc(100% - 44px) 44px, #000 0, transparent 900px);
-    mask-image: radial-gradient(circle at calc(100% - 44px) 44px, #000 0, transparent 900px); }
+    mask-image: radial-gradient(circle at calc(100% - 44px) 44px, #000 0, transparent 900px);
+    transition: opacity .3s ease; }
+  .waves.fade { opacity: 0; }
+  /* Фон под стиль музыки: data-style на <html> ставится при выборе подборки жанра.
+     Только CSS-узоры, без картинок — полупрозрачные, чтобы не мешать читать карточки */
+  [data-style] .waves { -webkit-mask-image: none; mask-image: none; }
+  /* Поп — конфетти и пузырьки */
+  [data-style="pop"] .waves {
+    background:
+      radial-gradient(circle, rgba(236, 72, 153, .28) 0 5px, transparent 6px) 0 0 / 72px 72px,
+      radial-gradient(circle, rgba(139, 92, 246, .24) 0 3px, transparent 4px) 36px 30px / 72px 72px,
+      radial-gradient(circle, rgba(250, 204, 21, .30) 0 4px, transparent 5px) 18px 52px / 110px 110px,
+      radial-gradient(circle at 85% 10%, rgba(236, 72, 153, .22), transparent 45%),
+      radial-gradient(circle at 10% 90%, rgba(139, 92, 246, .20), transparent 50%); }
+  /* Рок — резкие косые разрезы и красное зарево снизу */
+  [data-style="rock"] .waves {
+    background:
+      repeating-linear-gradient(-60deg, transparent 0 46px, rgba(220, 38, 38, .16) 46px 52px, transparent 52px 70px, rgba(31, 41, 55, .12) 70px 73px, transparent 73px 120px),
+      radial-gradient(ellipse at 50% 110%, rgba(220, 38, 38, .30), transparent 60%),
+      linear-gradient(to bottom, rgba(17, 24, 39, .10), transparent 40%); }
+  /* Джаз — виниловая пластинка и тёплый «дымный» свет */
+  [data-style="jazz"] .waves {
+    background:
+      radial-gradient(circle at 100% 70%, rgba(180, 83, 9, .30) 0 40px, transparent 41px),
+      repeating-radial-gradient(circle at 100% 70%, transparent 0 7px, rgba(217, 119, 6, .16) 7px 8px),
+      radial-gradient(circle at 15% 25%, rgba(217, 119, 6, .24), transparent 45%),
+      radial-gradient(circle at 60% 55%, rgba(180, 83, 9, .12), transparent 50%);
+    -webkit-mask-image: radial-gradient(circle at 100% 70%, #000 0, #000 300px, rgba(0,0,0,.3) 700px);
+    mask-image: radial-gradient(circle at 100% 70%, #000 0, #000 300px, rgba(0,0,0,.3) 700px); }
+  /* Классика — нотный стан и бордово-золотое свечение */
+  [data-style="classical"] .waves {
+    background:
+      linear-gradient(to bottom, transparent 0 40px, rgba(127, 29, 29, .20) 40px 41px, transparent 41px 52px,
+        rgba(127, 29, 29, .20) 52px 53px, transparent 53px 64px, rgba(127, 29, 29, .20) 64px 65px, transparent 65px 76px,
+        rgba(127, 29, 29, .20) 76px 77px, transparent 77px 88px, rgba(127, 29, 29, .20) 88px 89px, transparent 89px) 0 0 / 100% 150px,
+      radial-gradient(ellipse at 50% 0%, rgba(202, 138, 4, .22), transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(127, 29, 29, .16), transparent 55%); }
+  /* Электроника — неоновая сетка, бирюза и пурпур */
+  [data-style="electronic"] .waves {
+    background:
+      linear-gradient(rgba(6, 182, 212, .20) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, rgba(6, 182, 212, .20) 1px, transparent 1px) 0 0 / 40px 40px,
+      radial-gradient(circle at 0% 100%, rgba(217, 70, 239, .30), transparent 50%),
+      radial-gradient(circle at 100% 0%, rgba(6, 182, 212, .30), transparent 50%);
+    -webkit-mask-image: linear-gradient(to top, #000, rgba(0,0,0,.35));
+    mask-image: linear-gradient(to top, #000, rgba(0,0,0,.35)); }
+  /* Ретро — закат 70-х: полосы горчичного, оранжевого, коричневого и солнце */
+  [data-style="retro"] .waves {
+    background:
+      radial-gradient(circle at 50% 72%, rgba(251, 146, 60, .30) 0 110px, transparent 111px),
+      linear-gradient(to bottom, transparent 0 62%, rgba(234, 179, 8, .15) 62% 70%, transparent 70% 72%,
+        rgba(249, 115, 22, .15) 72% 80%, transparent 80% 82%, rgba(194, 65, 12, .15) 82% 90%, transparent 90% 92%,
+        rgba(120, 53, 15, .15) 92% 100%),
+      radial-gradient(ellipse at 50% 0%, rgba(234, 179, 8, .14), transparent 60%); }
+  /* Lounge / Chill — мягкие плывущие пятна: бирюза, лаванда, персик */
+  [data-style="chill"] .waves {
+    background:
+      radial-gradient(circle at 20% 30%, rgba(45, 212, 191, .30), transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(167, 139, 250, .28), transparent 42%),
+      radial-gradient(circle at 60% 85%, rgba(251, 191, 160, .30), transparent 45%);
+    background-size: 160% 160%;
+    animation: drift 30s ease-in-out infinite alternate; }
+  @keyframes drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+  @media (prefers-reduced-motion: reduce) { [data-style="chill"] .waves { animation: none; } }
   /* Антенна и бегущие волны, пока играет станция */
   .antenna { position: fixed; top: 38px; right: 38px; width: 12px; height: 12px; border-radius: 50%;
     background: var(--accent); z-index: -1; pointer-events: none; }
@@ -238,13 +301,13 @@ const PRESETS = [
   { label: "Беларусь", country: "BY" },
   { label: "Казахстан", country: "KZ" },
   { label: "Польша", country: "PL" },
-  { label: "Поп", tag: "pop" },
-  { label: "Рок", tag: "rock" },
-  { label: "Джаз", tag: "jazz" },
-  { label: "Классика", tag: "classical" },
-  { label: "Электроника", tag: "electronic" },
-  { label: "Ретро", tag: "oldies" },
-  { label: "Lounge / Chill", tag: "chillout" },
+  { label: "Поп", tag: "pop", bg: "pop" },
+  { label: "Рок", tag: "rock", bg: "rock" },
+  { label: "Джаз", tag: "jazz", bg: "jazz" },
+  { label: "Классика", tag: "classical", bg: "classical" },
+  { label: "Электроника", tag: "electronic", bg: "electronic" },
+  { label: "Ретро", tag: "oldies", bg: "retro" },
+  { label: "Lounge / Chill", tag: "chillout", bg: "chill" },
   { label: "Новости", tag: "news" },
 ];
 
@@ -520,6 +583,21 @@ $("httpsOnly").onchange = e => { store("radio.httpsOnly", e.target.checked); ren
 
 function setChip(i) {
   document.querySelectorAll(".chip").forEach((c, j) => c.classList.toggle("on", j === i));
+  setStyleBg(i >= 0 && PRESETS[i].bg);
+}
+
+// Фон под стиль музыки: плавно гасим слой, меняем узор, проявляем. Страны, избранное, поиск — обычные радиоволны
+let bgTimer = null;
+function setStyleBg(name) {
+  const root = document.documentElement;
+  if ((root.getAttribute("data-style") || "") === (name || "")) return;
+  const waves = document.querySelector(".waves");
+  waves.classList.add("fade");
+  clearTimeout(bgTimer);
+  bgTimer = setTimeout(() => {
+    if (name) root.setAttribute("data-style", name); else root.removeAttribute("data-style");
+    waves.classList.remove("fade");
+  }, 300);
 }
 
 PRESETS.forEach((p, i) => {

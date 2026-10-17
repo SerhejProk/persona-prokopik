@@ -263,7 +263,6 @@
   .save:disabled { color: var(--muted); opacity: .5; cursor: default; }
   .save.done { box-shadow: var(--in-sm); }
   .notes-bar { grid-column: 1 / -1; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: 13px; }
-  .notes-bar .btn { padding: 8px 16px; font-size: 14px; }
   .note .info .name { white-space: normal; }
   .note .acts { display: flex; gap: 8px; flex: none; }
   .note .acts a, .note .acts button { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; padding: 0;
@@ -846,8 +845,7 @@ function renderNotes() {
   }
   const bar = document.createElement("div");
   bar.className = "notes-bar";
-  bar.innerHTML = '<button class="btn" type="button">⤓ Скачать список (.md для Obsidian)</button><span>Книжка хранится в этом браузере — на телефоне и компьютере она своя.</span>';
-  bar.firstChild.onclick = downloadNotes;
+  bar.textContent = "Книжка хранится в радио на этом устройстве — на телефоне и компьютере она своя.";
   grid.appendChild(bar);
   notes.forEach((n, i) => {
     const c = document.createElement("div");
@@ -871,16 +869,6 @@ function renderNotes() {
     c.appendChild(acts);
     grid.appendChild(c);
   });
-}
-function downloadNotes() {
-  const lines = ["# Радио — записная книжка", ""].concat(notes.map(n =>
-    "- " + noteTime(n.time) + " — " + (n.song ? "**" + n.song + "** · " : "") + n.station));
-  const blob = new Blob([lines.join("\n") + "\n"], { type: "text/markdown;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "Радио — записная книжка.md";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 // Кнопка «Установить как приложение»: Edge/Chrome на компьютере и Android сами предлагают установку,

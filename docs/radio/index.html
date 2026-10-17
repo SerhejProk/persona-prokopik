@@ -267,16 +267,26 @@ function render(list) {
   lastListRaw = list;
   const httpsOnly = $("httpsOnly").checked;
   // Одна станция часто лежит в каталоге несколько раз — оставляем одну, предпочитая поток по https
-  const byName = new Map();
+  // Все адреса одной станции собираем в s.urls: если первый не отвечает, плеер пробует следующие.
+  // «Radio RMF FM» и «RMF FM» считаем одной станцией.
+  const isSecure = st => st.url_resolved.startsWith("https:");
+  const groups = new Map();
   for (const s of list) {
     if (!s.url_resolved) continue;
-    const secure = s.url_resolved.startsWith("https:");
-    if (httpsOnly && !secure) continue;
-    const key = s.name.trim().toLowerCase();
-    const prev = byName.get(key);
-    if (!prev || (secure && !prev.url_resolved.startsWith("https:"))) byName.set(key, s);
+    if (httpsOnly && !isSecure(s)) continue;
+    const key = s.name.trim().toLowerCase().replace(/^(radio|радио)\s+/, "").replace(/[^a-zа-яё0-9]/g, "")
+      || s.name.trim().toLowerCase();
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
   }
-  lastList = [...byName.values()];
+  lastList = [];
+  groups.forEach(g => {
+    const sorted = g.filter(isSecure).concat(g.filter(st => !isSecure(st))); // https вперёд, иначе по популярности
+    const main = sorted[0];
+    main.urls = sorted.map(st => st.url_resolved).filter((u, i, a) => a.indexOf(u) === i);
+    if (!main.favicon) { const withLogo = g.find(st => st.favicon); if (withLogo) main.favicon = withLogo.favicon; }
+    lastList.push(main);
+  });
   $("status").textContent = lastList.length ? `Найдено станций: ${lastList.length}` : "";
   const grid = $("grid");
   grid.innerHTML = "";
@@ -380,19 +390,43 @@ function playStation(s) {
   markPlaying();
   setMediaSession(s);
 
+  urlIndex = 0;
+  connect();
+  fetch(SERVERS[0] + "/json/url/" + s.stationuuid).catch(() => {}); // учёт прослушивания в каталоге
+}
+
+// Подключение к текущему адресу станции. Если за 10 секунд звук не пошёл или пришла ошибка —
+// пробуем следующий адрес той же станции, и только когда адреса кончились, пишем «не отвечает».
+let urlIndex = 0, connectTimer = null;
+function connect() {
+  const urls = current.urls || [current.url_resolved];
+  const url = urls[urlIndex];
+  clearTimeout(connectTimer);
   if (hls) { hls.destroy(); hls = null; }
-  const url = s.url_resolved;
-  const isHls = /\.m3u8(\?|$)/i.test(url) || (s.hls == 1);
+  const isHls = /\.m3u8(\?|$)/i.test(url) || (current.hls == 1);
   if (isHls && window.Hls && Hls.isSupported()) {
     hls = new Hls();
     hls.loadSource(url);
     hls.attachMedia(audio);
-    hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) failed(); });
+    hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) nextUrl(); });
   } else {
     audio.src = url;
   }
-  audio.play().catch(err => { if (err.name !== "AbortError") failed(); });
-  fetch(SERVERS[0] + "/json/url/" + s.stationuuid).catch(() => {}); // учёт прослушивания в каталоге
+  audio.play().catch(err => { if (err.name !== "AbortError") nextUrl(); });
+  connectTimer = setTimeout(nextUrl, 10000);
+}
+function nextUrl() {
+  clearTimeout(connectTimer);
+  const urls = current.urls || [current.url_resolved];
+  if (urlIndex + 1 < urls.length) {
+    urlIndex++;
+    $("nowMeta").textContent = "Пробую другой адрес станции…";
+    connect();
+  } else {
+    if (hls) { hls.destroy(); hls = null; }
+    audio.removeAttribute("src"); audio.load();
+    failed();
+  }
 }
 
 // Название и логотип на экране блокировки телефона, кнопки пауза/играть в шторке
@@ -411,10 +445,10 @@ function failed() {
   $("play").classList.remove("on");
 }
 
-audio.addEventListener("playing", () => { $("play").textContent = "❚❚"; $("play").classList.add("on"); document.documentElement.classList.add("on-air"); $("nowMeta").textContent = metaText(current) || "В эфире"; });
+audio.addEventListener("playing", () => { clearTimeout(connectTimer); $("play").textContent = "❚❚"; $("play").classList.add("on"); document.documentElement.classList.add("on-air"); $("nowMeta").textContent = metaText(current) || "В эфире"; });
 audio.addEventListener("pause", () => { $("play").textContent = "▶"; $("play").classList.remove("on"); document.documentElement.classList.remove("on-air"); });
 audio.addEventListener("waiting", () => { $("nowMeta").textContent = "Буферизация…"; });
-audio.addEventListener("error", () => { if (audio.src) failed(); });
+audio.addEventListener("error", () => { if (audio.getAttribute("src") && current) nextUrl(); });
 
 $("play").onclick = () => {
   if (!current) return;
@@ -422,6 +456,7 @@ $("play").onclick = () => {
     // Для живого эфира переподключаемся, чтобы не играть «из прошлого»
     playStation(current);
   } else {
+    clearTimeout(connectTimer);
     audio.pause();
   }
 };

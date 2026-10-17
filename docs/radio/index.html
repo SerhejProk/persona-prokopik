@@ -6,23 +6,55 @@
 <meta name="theme-color" content="#e4e8ee">
 <title>Интернет-радио</title>
 <script async src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<script>
+// Фон по времени суток: с 7:00 до 20:00 «Рассвет», остальное время «Ночной город». Проверяем раз в минуту.
+// Для проверки можно открыть страницу с ?theme=night или ?theme=day.
+(function () {
+  var forced = (location.search.match(/theme=(day|night)/) || [])[1];
+  function apply() {
+    var h = new Date().getHours();
+    var night = forced ? forced === "night" : (h < 7 || h >= 20);
+    document.documentElement.setAttribute("data-theme", night ? "night" : "day");
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", night ? "#23262d" : "#fde2d4");
+  }
+  apply();
+  setInterval(apply, 60000);
+})();
+</script>
 <style>
   /* Неоморфизм: всё вылеплено из одного «пластика», свет падает слева сверху */
+  /* Днём фон «Рассвет», вечером и ночью — «Ночной город». Тему ставит скрипт по часам (data-theme на <html>) */
   :root {
-    --bg: #e4e8ee; --text: #2d3748; --muted: #718096; --accent: #2b6cb0;
-    --light: #ffffff; --dark: #b8bec7;
+    --bg: #efe6f0; --text: #3b3550; --muted: #7d7490; --accent: #7a4fb0;
+    --light: #ffffff; --dark: #cdbfd2;
+    --scene:
+      radial-gradient(ellipse at 15% 10%, rgba(255, 214, 190, .9), transparent 55%),
+      radial-gradient(ellipse at 90% 85%, rgba(196, 220, 247, .9), transparent 55%),
+      linear-gradient(135deg, #fde2d4 0%, #e9dcf5 50%, #d6e6f7 100%);
     --out: 6px 6px 12px var(--dark), -6px -6px 12px var(--light);
     --out-sm: 3px 3px 6px var(--dark), -3px -3px 6px var(--light);
     --in: inset 4px 4px 8px var(--dark), inset -4px -4px 8px var(--light);
     --in-sm: inset 2px 2px 4px var(--dark), inset -2px -2px 4px var(--light);
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #2a2d34; --text: #e2e8f0; --muted: #94a0b4; --accent: #63b3ed;
-      --light: #32353d; --dark: #1f2126; }
+  :root[data-theme="night"] {
+    --bg: #2a2d34; --text: #e2e8f0; --muted: #94a0b4; --accent: #63b3ed;
+    --light: #353943; --dark: #1b1d21;
+    --scene:
+      radial-gradient(circle at 12% 18%, rgba(246, 173, 85, .22) 0, transparent 90px),
+      radial-gradient(circle at 78% 12%, rgba(99, 179, 237, .2) 0, transparent 130px),
+      radial-gradient(circle at 48% 6%, rgba(252, 129, 129, .2) 0, transparent 70px),
+      radial-gradient(circle at 92% 55%, rgba(246, 224, 94, .14) 0, transparent 110px),
+      radial-gradient(circle at 25% 60%, rgba(183, 148, 244, .16) 0, transparent 100px),
+      radial-gradient(circle at 60% 90%, rgba(99, 179, 237, .12) 0, transparent 140px),
+      #23262d;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
     font: 15px/1.45 "Segoe UI", system-ui, sans-serif; padding-bottom: 120px; }
+  /* Фон рисуем отдельным неподвижным слоем: background-attachment: fixed не работает на айфоне */
+  body::before { content: ""; position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1; background: var(--scene); }
   header { max-width: 1100px; margin: 0 auto; padding: 28px 16px 8px; }
   h1 { margin: 0 0 4px; font-size: 26px; text-shadow: 1px 1px 1px var(--light), -1px -1px 1px var(--dark); }
   .sub { color: var(--muted); margin: 0 0 20px; }
@@ -92,6 +124,7 @@
       <option value="RU">Россия</option>
       <option value="BY">Беларусь</option>
       <option value="KZ">Казахстан</option>
+      <option value="PL">Польша</option>
       <option value="UA">Украина</option>
       <option value="US">США</option>
       <option value="GB">Великобритания</option>
@@ -142,6 +175,7 @@ const PRESETS = [
   { label: "Популярное в России", country: "RU" },
   { label: "Беларусь", country: "BY" },
   { label: "Казахстан", country: "KZ" },
+  { label: "Польша", country: "PL" },
   { label: "Поп", tag: "pop" },
   { label: "Рок", tag: "rock" },
   { label: "Джаз", tag: "jazz" },

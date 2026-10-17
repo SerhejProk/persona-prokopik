@@ -9,6 +9,8 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<!-- Можно установить как приложение (Edge/Chrome): своё окно и своя иконка в панели задач -->
+<link rel="manifest" href="manifest.webmanifest">
 <!-- Превью ссылки в Telegram/WhatsApp: пересылать надо ссылку, а не файл -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="РАДИО">
@@ -186,6 +188,10 @@
   header { max-width: 1100px; margin: 0 auto; padding: 28px 16px 8px; }
   h1 { margin: 0 0 4px; font-size: 26px; text-shadow: 1px 1px 1px var(--light), -1px -1px 1px var(--dark); }
   .sub { color: var(--muted); margin: 0 0 20px; }
+  .install { margin-left: 8px; padding: 4px 12px; border-radius: 999px; font-size: 13px; color: var(--accent);
+    border: 1px solid var(--edge); box-shadow: var(--out-sm); }
+  .install:active { box-shadow: var(--in-sm); }
+  .install[hidden] { display: none; }
   .search { display: flex; gap: 14px; flex-wrap: wrap; }
   .search input, .search select { flex: 1 1 200px; padding: 12px 16px; border: 0; outline: 0;
     border-radius: 14px; background: var(--bg); color: var(--text); font: inherit; box-shadow: var(--in); }
@@ -282,7 +288,8 @@
     <small class="tg-only">Если кнопка не сработала: нажмите ⋯ вверху справа → «Открыть в Safari» / «Открыть в браузере».</small>
   </div>
   <h1>РАДИО</h1>
-  <p class="sub">Тысячи станций со всего мира. Каталог: radio-browser.info</p>
+  <p class="sub">Тысячи станций со всего мира. Каталог: radio-browser.info
+    <button class="install" id="install" type="button" hidden>⤓ Установить как приложение</button></p>
   <form class="search" id="form">
     <input id="q" type="search" placeholder="Название станции или жанр…" autocomplete="off">
     <select id="country">
@@ -689,11 +696,30 @@ function setMarquee(note) {
   });
   const len = el.querySelector(".track > span").textContent.length;
   el.style.setProperty("--dur", Math.max(10, Math.round(len * 0.28)) + "s"); // скорость одинаковая при любой длине
+  const name = current.name.trim();
+  if (note) setTitleMarquee("", "⏳ " + name);
+  else setTitleMarquee(nowSong ? "♪ " + nowSong + " · " + name : name + (current.country ? " · " + current.country : ""));
 }
 function stopMarquee(text) {
   const el = $("nowMeta");
   el.className = "meta";
   el.textContent = text;
+  setTitleMarquee("", "РАДИО");
+}
+// Та же бегущая строка в заголовке вкладки — её видно на кнопке окна в панели задач и при наведении на неё.
+// В свёрнутом окне браузер крутит таймер не чаще раза в секунду — строка бежит медленнее, это нормально
+let titleChars = [], titlePos = 0, titleTimer = null;
+function setTitleMarquee(text, still) {
+  clearInterval(titleTimer);
+  if (!text) { document.title = still || "РАДИО"; return; }
+  titleChars = Array.from(text + "   •   "); // Array.from — чтобы не разрезать эмодзи пополам
+  titlePos = 0;
+  const tick = () => {
+    document.title = "▶ " + titleChars.slice(titlePos).join("") + titleChars.slice(0, titlePos).join("");
+    titlePos = (titlePos + 1) % titleChars.length;
+  };
+  tick();
+  titleTimer = setInterval(tick, 350);
 }
 // Откуда узнать текущую песню для адреса потока: [адрес запроса, функция, достающая «исполнитель — песня»]
 function songSource(u) {
@@ -764,6 +790,17 @@ audio.addEventListener("pause", () => { $("play").textContent = "▶"; $("play")
   if (userPaused) { userPaused = false; stopMarquee("Пауза — нажмите ▶"); } });
 audio.addEventListener("waiting", () => { setMarquee("Буферизация…"); });
 audio.addEventListener("error", () => { if (audio.getAttribute("src") && current) nextUrl(); });
+
+// Кнопка «Установить как приложение»: Edge/Chrome на компьютере и Android сами предлагают установку,
+// мы только показываем кнопку, когда браузер готов. Установленное радио — своё окно и своя иконка в панели задач
+let installPrompt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installPrompt = e; $("install").hidden = false; });
+window.addEventListener("appinstalled", () => { installPrompt = null; $("install").hidden = true; });
+$("install").onclick = () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  installPrompt.userChoice.then(() => { installPrompt = null; $("install").hidden = true; });
+};
 
 $("play").onclick = () => {
   if (!current) return;
